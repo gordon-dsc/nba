@@ -6,13 +6,114 @@ format: html
 # Import
 ##Packages
 
+# Packages Install
+
 ```{r packages}
-library(rvest)
-library(stringr) # for str_remove()
-library(readr) # for parse_date()
-library(tibble) # for tibble()
+install.packages("tidyverse")
+install.packages("httr2")
 library(tidyverse)
+library(httr2)
+library(tidyr)
 ```
+
+# API Data
+
+During our data import the names of NBA all star players from 1980 to 2020 were pulled using web scrapping. We then used the balldontlie function to import the season average data for the players in a given year from that list.
+
+## Functions for API
+
+We wrote several functions to make accessing the api data slightly easier before applying it to our list of names. The API identifies players by a id number, the first function searches for that ID number. The second function takes the ID number and a give season and returns the average stats that player had in the given season. The third function combines the first two for simplicity when applying it to the list, it takes the first and last name of the player in a season and returns the season averages.
+
+```{r function 1}
+get_id_number <- function(first, last){
+  url <- "https://www.balldontlie.io/api/v1"  #base api url
+  request(url)|>                              
+    req_url_path_append("/players") |>       #api endpoint
+    req_url_query(per_page = 100,
+                  search = last) |>
+    req_perform()|>
+    resp_body_json() ->
+    all_player_ids
+  
+  #unnest and rectangling the player ID's
+  all_player_ids <- all_player_ids[1]
+  all_player_id_tibble <- tibble(all_player_ids)
+  
+  all_player_id_tibble |>
+    unnest_longer(col = all_player_ids) |>
+    hoist(all_player_ids,
+          id = c("id"),
+          first_name = c("first_name"),
+          last_name = c("last_name")) ->
+    all_player_id_tibble
+  
+  #filter for first and last name matches
+  all_player_id_tibble |>
+    filter(first_name == first) |>
+    filter(last_name == last) ->
+    all_player_id_tibble
+  
+  all_player_id_tibble$id[1] #returns the id number of the player in the api database
+}
+
+```
+
+```{r function 2}
+#function to get season averages from player id
+get_stats <- function(season, id){
+  #query parameters seem to not work for the api, the following directly constructs to url 
+  url <- "https://www.balldontlie.io/api/v1"
+  append_string <- "/season_averages?"
+  append_string_ids <- paste("player_ids[]=", as.character(id),sep = "")
+  append_string_season <- paste("&season=", as.character(season), sep = "")
+  append_string <- paste(append_string,append_string_ids, append_string_season,sep = "")
+  
+  request(url) |>
+    req_url_path_append(append_string) |>
+    req_perform() |>
+    resp_body_json() ->
+    stats_json
+  
+  #rectangle the data
+  stats_json <- stats_json[["data"]]
+  stats_tibble <- tibble(stats_json) 
+  stats_tibble|>
+    unnest_wider(col = stats_json) ->
+    stats_tibble #return the stats for the player in the year
+}
+```
+
+```{r function 3}
+#combines the first two functions to streamline the process
+get_season_avg <- function(first, last, season){
+  id <- get_id_number(first, last)
+  get_stats(season, id) ->
+  stats_tibble
+}
+```
+
+## Examples of API use on test data frame
+
+Created a simple Data Frame object with player names to test functionality
+
+```{r}
+#create a data frame for testing
+names <- list(lebron = c("LeBron","James"),
+              davis = c("Anthony", "Davis"))
+names <- tibble(names)
+names|>
+  unnest_wider(names, names_sep = "")->
+  names
+
+#test function within a mutate call
+names|>
+  mutate(stats = map2(.x = names1,
+                      .y = names2,
+                      .f = \(x,y) {get_season_avg(x,y,2020)})) |>
+  unnest_wider(stats) ->
+  names_stats
+
+
 
 
 ##Scaping
@@ -58,5 +159,4 @@ for (i in 2000:2020) {
   initial <- bind_rows(initial, temp)
 }
 ```
-
 
