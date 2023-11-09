@@ -1,7 +1,10 @@
 ---
 title: "Data Import Script"
+author: Zeke Hall and Ethan Keys
 format: html
 ---
+# Import
+##Packages
 
 # Packages Install
 
@@ -110,4 +113,50 @@ names|>
   unnest_wider(stats) ->
   names_stats
 
+
+
+
+##Scaping
+```{r}
+data_func <- function(year){
+url <-"https://www.basketball-reference.com/allstar/NBA_"
+url_ending <- paste(as.character(year), ".html", sep = "")
+url_final <- paste(url, url_ending, sep = "")
+read_html(url_final) |>
+  html_elements(".left") |>
+  html_element("a") |>
+  html_text2() -> nba_all_star
+nba_all_star |>
+  tibble() |>
+  drop_na() |>
+  mutate(new_column = rep(c("player", "team"), length.out = n())) |>
+  pivot_wider(
+    names_from = new_column,
+    values_from = nba_all_star
+  ) |>
+  unnest_longer(
+    col = 1:2
+  ) |>
+  separate_wider_delim(
+    cols = player,
+    delim = " ",
+    names = c("first", "last"),
+    too_many = "merge"
+  ) |>
+  mutate(year = as.numeric(year)) -> all_star_clean
+}
 ```
+
+##Iterating from 1980 to 2020
+```{r}
+initial <- data_func(1980)  
+for (i in 1981:1998) {
+  temp <- data_func(i)
+  initial <- bind_rows(initial, temp)
+}
+for (i in 2000:2020) {
+  temp <- data_func(i)
+  initial <- bind_rows(initial, temp)
+}
+```
+
