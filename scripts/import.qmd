@@ -3,20 +3,69 @@ title: "Data Import Script"
 author: Zeke Hall and Ethan Keys
 format: html
 ---
-# Import
-##Packages
 
-# Packages Install
+# Import
+
+## Packages Install
 
 ```{r packages}
 install.packages("tidyverse")
 install.packages("httr2")
+install.packages("rvest")
 library(tidyverse)
 library(httr2)
-library(tidyr)
+library(rvest)
 ```
 
-# API Data
+## Web Scrapping
+
+The first step in our data import was to scrap the names of all the NBA all stars and the games they had played in. This was done using [this](https://www.basketball-reference.com/allstar/NBA_2020.html) webpage. The site holding the data only showed one game on a page so we created a function to scraped and slightly clean each page by passing in the year of the game. We then used that function to iterate through the years 1980 to 2020 (excluding 1999 as there was no all star game that year). The data frames were then combined into one large frame.
+
+```{r function to scrape by year of all star game}
+data_func <- function(year){
+url <-"https://www.basketball-reference.com/allstar/NBA_" #base URL for the website
+url_ending <- paste(as.character(year), ".html", sep = "") #add the target year
+url_final <- paste(url, url_ending, sep = "") #create the full url to scrape from
+
+#scrapes the target data
+read_html(url_final) |>
+  html_elements(".left") |>
+  html_element("a") |>
+  html_text2() -> nba_all_star
+
+#small amount of data cleaning and rectangling 
+nba_all_star |>
+  tibble() |>
+  drop_na() |>
+  mutate(new_column = rep(c("player", "team"), length.out = n())) |>
+  pivot_wider(names_from = new_column,
+              values_from = nba_all_star) |>
+  unnest_longer(col = 1:2) |>
+  separate_wider_delim(cols = player,
+                       delim = " ",
+                       names = c("first", "last"),
+                       too_many = "merge") |>
+  mutate(year = as.numeric(year)) -> all_star_clean
+}
+```
+
+```{r create data frame}
+#example of how to use scraping functions 
+
+example_scrap <- data_func(1980)  #create and frame to build on using first year
+for (i in 1981:1998) { #for ever year from 1981 to 1998 add the information to the data frame
+  temp <- data_func(i)
+  example_scrap <- bind_rows(example_scrap, temp)
+}
+for (i in 2000:2020) { #for every year from 2000 to 2020 add information to data frame
+  temp <- data_func(i)
+  example_scrap <- bind_rows(example_scrap, temp)
+}
+```
+
+\
+
+## API Data
 
 During our data import the names of NBA all star players from 1980 to 2020 were pulled using web scrapping. We then used the balldontlie function to import the season average data for the players in a given year from that list.
 
@@ -30,7 +79,7 @@ get_id_number <- function(first, last){
   request(url)|>                              
     req_url_path_append("/players") |>       #api endpoint
     req_url_query(per_page = 100,
-                  search = last) |>
+                  search = "Carroll") |>
     req_perform()|>
     resp_body_json() ->
     all_player_ids
@@ -112,51 +161,71 @@ names|>
                       .f = \(x,y) {get_season_avg(x,y,2020)})) |>
   unnest_wider(stats) ->
   names_stats
-
-
-
-
-##Scaping
-```{r}
-data_func <- function(year){
-url <-"https://www.basketball-reference.com/allstar/NBA_"
-url_ending <- paste(as.character(year), ".html", sep = "")
-url_final <- paste(url, url_ending, sep = "")
-read_html(url_final) |>
-  html_elements(".left") |>
-  html_element("a") |>
-  html_text2() -> nba_all_star
-nba_all_star |>
-  tibble() |>
-  drop_na() |>
-  mutate(new_column = rep(c("player", "team"), length.out = n())) |>
-  pivot_wider(
-    names_from = new_column,
-    values_from = nba_all_star
-  ) |>
-  unnest_longer(
-    col = 1:2
-  ) |>
-  separate_wider_delim(
-    cols = player,
-    delim = " ",
-    names = c("first", "last"),
-    too_many = "merge"
-  ) |>
-  mutate(year = as.numeric(year)) -> all_star_clean
-}
 ```
 
-##Iterating from 1980 to 2020
+## Data import using scrape and API
+
+Data import by using scrape function by year to get names and year into frame before using api function to get stats data. Some names are scrapped in a way that is difficult for API to find so they are changed with case_when clauses.
+
+Initial year is done than iterate through the rest (skipping 1999 as there was no game) and adding information to data frame as it is imported.
+
 ```{r}
-initial <- data_func(1980)  
-for (i in 1981:1998) {
+initial <- data_func(1980) #create and frame to build on using first year
+initial |>
+  mutate(last = case_when(last == "B. Free" ~ "Free",
+                           TRUE ~ last),
+         stats = map2(.x = as.character(first),
+                      .y = as.character(last),
+                      .f = \(x,y) {get_season_avg(x,y,1980)},
+                      .progress = TRUE)) |>
+  unnest_wider(stats) ->
+  initial
+Sys.sleep(60)
+for (i in 1987:1998) { #for ever year from 1981 to 1998 add the information to the data frame
   temp <- data_func(i)
+  temp |>
+    mutate(first = case_when(temp$first == "Tiny" ~ "Nate",
+                             TRUE ~ temp$first),
+           last = case_when(temp$last == "Barry Carroll"~ "Barry,Carroll",
+                            TRUE ~ temp$last)) ->
+    temp
+  temp |>
+    mutate(stats = map2(.x = as.character(temp$first),
+                        .y = as.character(temp$last),
+                        .f = \(x,y) {get_season_avg(x,y,i)},
+                        .progress = TRUE))|>
+    unnest_wider(stats) ->
+    temp
   initial <- bind_rows(initial, temp)
+  Sys.sleep(60)
 }
-for (i in 2000:2020) {
-  temp <- data_func(i)
-  initial <- bind_rows(initial, temp)
+for (i in 2000:2001) { #for every year from 2000 to 2020 add information to data frame
+  temp2 <- data_func(i)
+  temp2 |>
+    mutate(stats = map2(.x = as.character(temp$first),
+                              .y = as.character(temp$last),
+                              .f = \(x,y) {get_season_avg(x,y,i)},
+                              .progress = TRUE))|>
+    unnest_wider(stats) ->
+    temp2
+  initial <- bind_rows(initial, temp2)
+  Sys.sleep(60)
 }
+for (i in 2003:2020) { #for every year from 2000 to 2020 add information to data frame
+  temp2 <- data_func(i)
+  temp2 |>
+    mutate(stats = map2(.x = as.character(temp$first),
+                              .y = as.character(temp$last),
+                              .f = \(x,y) {get_season_avg(x,y,i)},
+                              .progress = TRUE))|>
+    unnest_wider(stats) ->
+    temp2
+  initial <- bind_rows(initial, temp2)
+  Sys.sleep(60)
+}#add 2002, 2018 for some reason there were only 23 instead of 24 all stars
 ```
 
+```{r}
+test <- get_season_avg("LeBron","James", 2020)
+range (1981:1998,2000:2001,2003:2020)
+```
