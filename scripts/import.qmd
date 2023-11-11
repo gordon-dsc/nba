@@ -79,7 +79,7 @@ get_id_number <- function(first, last){
   request(url)|>                              
     req_url_path_append("/players") |>       #api endpoint
     req_url_query(per_page = 100,
-                  search = "Carroll") |>
+                  search = last) |>
     req_perform()|>
     resp_body_json() ->
     all_player_ids
@@ -174,6 +174,8 @@ initial <- data_func(1980) #create and frame to build on using first year
 initial |>
   mutate(last = case_when(last == "B. Free" ~ "Free",
                            TRUE ~ last),
+         first = case_when(first == "Tiny" ~ "Nate",
+                           TRUE ~ first),
          stats = map2(.x = as.character(first),
                       .y = as.character(last),
                       .f = \(x,y) {get_season_avg(x,y,1980)},
@@ -181,51 +183,65 @@ initial |>
   unnest_wider(stats) ->
   initial
 Sys.sleep(60)
-for (i in 1987:1998) { #for ever year from 1981 to 1998 add the information to the data frame
-  temp <- data_func(i)
-  temp |>
-    mutate(first = case_when(temp$first == "Tiny" ~ "Nate",
-                             TRUE ~ temp$first),
-           last = case_when(temp$last == "Barry Carroll"~ "Barry,Carroll",
-                            TRUE ~ temp$last)) ->
+for (i in 1981:2020) { #for ever year from 1981 to 2020 excluding 1999 add the information to the data frame
+  if (i == 1999) {
+    Sys.sleep(60)
+    next 
+  }
+    temp <- data_func(i)
+    temp |>
+    mutate(first = case_when(first == "Tiny" ~ "Nate",
+                             first == "Fat" ~ "Lafayette",
+                             TRUE ~ first),
+           last = case_when(last == "Barry Carroll"~ "Barry,Carroll",
+                            last == "Stojaković" ~ "Stojakovic",
+                            last == "Dragić" ~ "Dragic",
+                            last == "Dončić" ~ "Doncic",
+                            last == "Jokić" ~ "Jokic",
+                            last == "Ginóbili" ~ "Ginobili",
+                            TRUE ~ last)) ->
     temp
-  temp |>
+    temp |>
     mutate(stats = map2(.x = as.character(temp$first),
                         .y = as.character(temp$last),
                         .f = \(x,y) {get_season_avg(x,y,i)},
                         .progress = TRUE))|>
     unnest_wider(stats) ->
     temp
-  initial <- bind_rows(initial, temp)
-  Sys.sleep(60)
+    initial <- bind_rows(initial, temp)
+    Sys.sleep(60) 
 }
-for (i in 2000:2001) { #for every year from 2000 to 2020 add information to data frame
-  temp2 <- data_func(i)
-  temp2 |>
-    mutate(stats = map2(.x = as.character(temp$first),
-                              .y = as.character(temp$last),
-                              .f = \(x,y) {get_season_avg(x,y,i)},
-                              .progress = TRUE))|>
-    unnest_wider(stats) ->
-    temp2
-  initial <- bind_rows(initial, temp2)
-  Sys.sleep(60)
-}
-for (i in 2003:2020) { #for every year from 2000 to 2020 add information to data frame
-  temp2 <- data_func(i)
-  temp2 |>
-    mutate(stats = map2(.x = as.character(temp$first),
-                              .y = as.character(temp$last),
-                              .f = \(x,y) {get_season_avg(x,y,i)},
-                              .progress = TRUE))|>
-    unnest_wider(stats) ->
-    temp2
-  initial <- bind_rows(initial, temp2)
-  Sys.sleep(60)
-}#add 2002, 2018 for some reason there were only 23 instead of 24 all stars
+# Bobby Jones 1981 and 1982 id 2277 
+# Patrick Ewing 1988 1989 id: 2964
+# Kareem Abdul Jabar id: 2247 
+# players that did not play 2019(Kevin Durnat, Klay Thompson, Dwayne Wade, Dirk Nowitzki)
+# 1991 Magic Johnson retired
+# Kobe Bryant 2016 retired (2015)
+# Tim Hardaway id: 576  yr 1993
+# 1993 Michael Jordan retired
+# 2012 Andrew Bynum was injured
+# Steve Smith 1998 first name Steven id: 675
+# 2012 Derick Rosen tore ACL
+# Meta World peace id: 1249 yr2004
+# Yao Ming did not play 2009 full season
+
 ```
 
 ```{r}
-test <- get_season_avg("LeBron","James", 2020)
-range (1981:1998,2000:2001,2003:2020)
+temp5 <- data_func(2009)
+  temp5 |>
+    mutate(last = case_when(temp5$last == "Dončić"~ "Doncic",
+                            temp5$last == "Jokić" ~ "Jokic",
+                            temp5$last == "Vučević" ~ "Vucevic",
+                            temp5$last == "Dragić" ~ "Dragic",
+                            temp5$last == "Ginóbili" ~ "Ginobili",
+                            TRUE ~ temp5$last)) -> temp5
+     
+  temp5 |>
+    mutate(stats = map2(.x = as.character(temp5$first),
+                        .y = as.character(temp5$last),
+                        .f = \(x,y) {get_season_avg(x,y,2009)},
+                        .progress = TRUE)) |>
+    unnest_wider(stats) ->
+    temp5
 ```
