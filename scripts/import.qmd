@@ -45,7 +45,9 @@ nba_all_star |>
                        delim = " ",
                        names = c("first", "last"),
                        too_many = "merge") |>
-  mutate(year = as.numeric(year)) -> all_star_clean
+  mutate(year = as.numeric(year-1)) -> 
+  #the -1 here is becasue the x year game was played in the x-1 to x season 
+  all_star_clean
 }
 ```
 
@@ -71,10 +73,19 @@ During our data import the names of NBA all star players from 1980 to 2020 were 
 
 ## Functions for API
 
-We wrote several functions to make accessing the api data slightly easier before applying it to our list of names. The API identifies players by a id number, the first function searches for that ID number. The second function takes the ID number and a give season and returns the average stats that player had in the given season. The third function combines the first two for simplicity when applying it to the list, it takes the first and last name of the player in a season and returns the season averages.
+We wrote several functions to make accessing the api data slightly easier before applying it to our list of names. The API identifies players by a id number, the first function searches for that ID number. There are a couple player that the API had multiple ID numbers for, we search through the data base to find the right ones and if statements control for these cases. The second function takes the ID number and a give season and returns the average stats that player had in the given season. The third function combines the first two for simplicity when applying it to the list, it takes the first and last name of the player in a season and returns the season averages.
 
 ```{r function 1}
 get_id_number <- function(first, last){
+  if(first == "Bobby" && last == "Jones"){
+    id_num <- 2277
+  } else if(first == "Patrick" && last == "Ewing"){
+    id_num <- 2964
+  } else if (first == "Steve" && last == "Smith") {
+    id_num <- 675
+  } else if (first == "Metta" && last == "World Peace"){
+    id_num <- 1249
+  } else {
   url <- "https://www.balldontlie.io/api/v1"  #base api url
   request(url)|>                              
     req_url_path_append("/players") |>       #api endpoint
@@ -102,7 +113,9 @@ get_id_number <- function(first, last){
     filter(last_name == last) ->
     all_player_id_tibble
   
-  all_player_id_tibble$id[1] #returns the id number of the player in the api database
+  id_num <- all_player_id_tibble$id[1] #returns the id number of the player in the api 
+  }
+  id_num
 }
 
 ```
@@ -167,10 +180,10 @@ names|>
 
 Data import by using scrape function by year to get names and year into frame before using api function to get stats data. Some names are scrapped in a way that is difficult for API to find so they are changed with case_when clauses.
 
-Initial year is done than iterate through the rest (skipping 1999 as there was no game) and adding information to data frame as it is imported.
+Initial year is done than iterate through the rest (skipping 1999 as there was no game) and adding information to data frame as it is imported. Some names are not able to be read by the API due to added accent marks and those are reformatted before being passed in
 
 ```{r}
-initial <- data_func(1980) #create and frame to build on using first year
+initial <- data_func(1981) #create and frame to build on using first year
 initial |>
   mutate(last = case_when(last == "B. Free" ~ "Free",
                            TRUE ~ last),
@@ -183,7 +196,7 @@ initial |>
   unnest_wider(stats) ->
   initial
 Sys.sleep(60)
-for (i in 1981:2020) { #for ever year from 1981 to 2020 excluding 1999 add the information to the data frame
+for (i in 1981:2021) { #for ever year from 1981 to 2020 excluding 1999 add the information to the data frame
   if (i == 1999) {
     Sys.sleep(60)
     next 
@@ -204,43 +217,40 @@ for (i in 1981:2020) { #for ever year from 1981 to 2020 excluding 1999 add the i
     temp |>
     mutate(stats = map2(.x = as.character(temp$first),
                         .y = as.character(temp$last),
-                        .f = \(x,y) {get_season_avg(x,y,i)},
+                        .f = \(x,y) {get_season_avg(x,y,(i-1))},
                         .progress = TRUE))|>
     unnest_wider(stats) ->
     temp
     initial <- bind_rows(initial, temp)
     Sys.sleep(60) 
 }
-# Bobby Jones 1981 and 1982 id 2277 
-# Patrick Ewing 1988 1989 id: 2964
 # Kareem Abdul Jabar id: 2247 
 # players that did not play 2019(Kevin Durnat, Klay Thompson, Dwayne Wade, Dirk Nowitzki)
 # 1991 Magic Johnson retired
 # Kobe Bryant 2016 retired (2015)
-# Tim Hardaway id: 576  yr 1993
+# Tim Hardaway retired in 1993
 # 1993 Michael Jordan retired
 # 2012 Andrew Bynum was injured
-# Steve Smith 1998 first name Steven id: 675
 # 2012 Derick Rosen tore ACL
-# Meta World peace id: 1249 yr2004
 # Yao Ming did not play 2009 full season
 
 ```
 
 ```{r}
-temp5 <- data_func(2009)
+temp5 <- data_func(2004)
   temp5 |>
     mutate(last = case_when(temp5$last == "Dončić"~ "Doncic",
                             temp5$last == "Jokić" ~ "Jokic",
                             temp5$last == "Vučević" ~ "Vucevic",
                             temp5$last == "Dragić" ~ "Dragic",
                             temp5$last == "Ginóbili" ~ "Ginobili",
+                            last == "Stojaković" ~ "Stojakovic",
                             TRUE ~ temp5$last)) -> temp5
      
   temp5 |>
     mutate(stats = map2(.x = as.character(temp5$first),
                         .y = as.character(temp5$last),
-                        .f = \(x,y) {get_season_avg(x,y,2009)},
+                        .f = \(x,y) {get_season_avg(x,y,(year-1))},
                         .progress = TRUE)) |>
     unnest_wider(stats) ->
     temp5
