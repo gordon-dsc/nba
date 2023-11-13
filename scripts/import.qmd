@@ -198,7 +198,7 @@ initial |>
   unnest_wider(stats) -> #rectangle the stats data
   initial
 Sys.sleep(60) #pause to not hit API rate limit
-for (i in 1982:2021) { #for ever year from 1981 to 2020 excluding 1999 add the information to the data frame
+for (i in 1982:2023) { #for ever year from 1981 to 2020 excluding 1999 add the information to the data frame
   if (i == 1999) {
     Sys.sleep(60)
     next 
