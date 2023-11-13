@@ -180,29 +180,32 @@ names|>
 
 Data import by using scrape function by year to get names and year into frame before using api function to get stats data. Some names are scrapped in a way that is difficult for API to find so they are changed with case_when clauses.
 
-Initial year is done than iterate through the rest (skipping 1999 as there was no game) and adding information to data frame as it is imported. Some names are not able to be read by the API due to added accent marks and those are reformatted before being passed in
+Initial year is done than iterate through the rest (skipping 1999 as there was no game) and adding information to data frame as it is imported. Some names are not able to be read by the API due to added accent marks and those are reformatted before being passed in. The API has a relatively low rate limit (about 30 a minute) so the script is set up to pause for 60 seconds between in iteration.
 
 ```{r}
 initial <- data_func(1981) #create and frame to build on using first year
 initial |>
+  #handle some irregular names
   mutate(last = case_when(last == "B. Free" ~ "Free",
                            TRUE ~ last),
          first = case_when(first == "Tiny" ~ "Nate",
                            TRUE ~ first),
+         #take players and seasons to get stats data
          stats = map2(.x = as.character(first),
                       .y = as.character(last),
                       .f = \(x,y) {get_season_avg(x,y,1980)},
                       .progress = TRUE)) |>
-  unnest_wider(stats) ->
+  unnest_wider(stats) -> #rectangle the stats data
   initial
-Sys.sleep(60)
-for (i in 1981:2021) { #for ever year from 1981 to 2020 excluding 1999 add the information to the data frame
+Sys.sleep(60) #pause to not hit API rate limit
+for (i in 1982:2021) { #for ever year from 1981 to 2020 excluding 1999 add the information to the data frame
   if (i == 1999) {
     Sys.sleep(60)
     next 
   }
     temp <- data_func(i)
     temp |>
+    #handle some irregular names
     mutate(first = case_when(first == "Tiny" ~ "Nate",
                              first == "Fat" ~ "Lafayette",
                              TRUE ~ first),
@@ -212,46 +215,27 @@ for (i in 1981:2021) { #for ever year from 1981 to 2020 excluding 1999 add the i
                             last == "Dončić" ~ "Doncic",
                             last == "Jokić" ~ "Jokic",
                             last == "Ginóbili" ~ "Ginobili",
+                            last == "Vučević" ~ "Vucevic",
                             TRUE ~ last)) ->
     temp
     temp |>
+    #take players and seasons to get stats data
     mutate(stats = map2(.x = as.character(temp$first),
                         .y = as.character(temp$last),
                         .f = \(x,y) {get_season_avg(x,y,(i-1))},
                         .progress = TRUE))|>
-    unnest_wider(stats) ->
+    unnest_wider(stats) -> #rectangle the stats data
     temp
-    initial <- bind_rows(initial, temp)
-    Sys.sleep(60) 
+    initial <- bind_rows(initial, temp) #combine new year data with existing frame
+    Sys.sleep(60) #wait to not hit API rate limit
 }
-# Kareem Abdul Jabar id: 2247 
-# players that did not play 2019(Kevin Durnat, Klay Thompson, Dwayne Wade, Dirk Nowitzki)
-# 1991 Magic Johnson retired
-# Kobe Bryant 2016 retired (2015)
-# Tim Hardaway retired in 1993
-# 1993 Michael Jordan retired
-# 2012 Andrew Bynum was injured
-# 2012 Derick Rosen tore ACL
-# Yao Ming did not play 2009 full season
+
+#magic johnson 1991 was voted to all star even though he was out for the season
 
 ```
 
 ```{r}
-temp5 <- data_func(2004)
-  temp5 |>
-    mutate(last = case_when(temp5$last == "Dončić"~ "Doncic",
-                            temp5$last == "Jokić" ~ "Jokic",
-                            temp5$last == "Vučević" ~ "Vucevic",
-                            temp5$last == "Dragić" ~ "Dragic",
-                            temp5$last == "Ginóbili" ~ "Ginobili",
-                            last == "Stojaković" ~ "Stojakovic",
-                            TRUE ~ temp5$last)) -> temp5
-     
-  temp5 |>
-    mutate(stats = map2(.x = as.character(temp5$first),
-                        .y = as.character(temp5$last),
-                        .f = \(x,y) {get_season_avg(x,y,(year-1))},
-                        .progress = TRUE)) |>
-    unnest_wider(stats) ->
-    temp5
+# write the data frame to a csv file in the correct directory
+write_csv(initial,
+          file = "../data/imported_data/nba_all_stars.csv")
 ```
