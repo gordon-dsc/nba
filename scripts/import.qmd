@@ -1,6 +1,6 @@
 ---
 title: "Data Import Script"
-author: Zeke Hall and Ethan Keys
+author: Zeke Hall and Ethan Keyes
 format: html
 ---
 

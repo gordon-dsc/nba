@@ -1,8 +1,33 @@
 ---
 title: "Data Cleaning Script"
+author: Zeke Hall and Ethan Keyes
 format: html
 ---
 
-```{r packages}
+# Data Cleaning
 
+## Install Packages
+
+```{r packages}
+install.packages("tidyverse")
+library(tidyverse)
+library(janitor)
+```
+
+## Data Cleaning
+
+The first step running this data cleaning script is to import the raw data set from import. The data from the import is relatively clean already. This simply cleans up the names and removes the unneeded player_id column (unique identifier within the API) and the season column as this is a repeat of the year column.
+
+```{r - cleaning}
+nba_all_stars |>
+  janitor::clean_names() |>
+  select(-c(player_id,season))->
+  nba_all_star_data_cleaned
+```
+
+Write the cleaned data file to its directory
+
+```{r}
+write_csv(nba_all_star_data_cleaned,
+          file = "../data/cleaned_data/cleaned_all_star_data.csv")
 ```
