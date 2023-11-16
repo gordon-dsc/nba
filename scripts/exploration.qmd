@@ -3,6 +3,107 @@ title: "Data Analysis Script"
 format: html
 ---
 
+# Exploration
+
+### Packages Install
+
 ```{r packages}
+install.packages("tidyverse")
+```
+
+### Import csv file
+
+```{r}
+read_csv(file = "../data/cleaned_data/cleaned_all_star_data.csv") -> nba_all_stars
+```
+
+### Exploration Questions
+
+1.  How has the number of three pointers attempted changed over time? The vertical line represents the year Stephen Curry entered the NBA
+
+```{r}
+nba_all_stars |>
+  group_by(year) |>
+  summarize(avg_fg3a = mean(fg3a, na.rm = TRUE)) -> avg_3_atempt
+
+avg_3_atempt |>
+  ggplot(mapping = aes(x = year,
+                       y = avg_fg3a)) +
+  geom_point(color = "blue") +
+  geom_smooth(color = "black", alpha = 0.25) +
+  geom_vline(xintercept = 2009, color = "gold")
+# saving result to output file
+ggsave(filename = "../output/question_1.png")
+```
+
+2.  Top ten players who scored the highest average points in years they were an all star
+
+```{r}
+nba_all_stars |>
+  group_by(first, last) |>
+  summarize(avg_pts = mean(pts, na.rm = TRUE)) |>
+  arrange(desc(avg_pts)) |>
+  head(n = 10) -> question_2
+# saving results to output file
+write_csv(x = question_2,
+          file = "../output/question_2.csv")
+  
+```
+
+3.  How does average points per game correlate with the average free throws attempted?
+
+```{r}
+nba_all_stars |>
+  ggplot(mapping = aes(x = pts,
+                       y = fta)) +
+  geom_point() + 
+  geom_smooth(method = "lm")
+# saving results to output file
+ggsave(filename = "../output/question_3.png")
+```
+
+4.  Which team has contributed the most all stars and the least all stars?
+
+```{r}
+nba_all_stars |>
+  group_by(team) |>
+  summarise(count = n()) |>
+  arrange(desc(count)) -> question_4_a
+# saving results of part a to output file
+write_csv(x = question_4_a,
+          file = "../output/question_4_a.csv")
+
+nba_all_stars |>
+  group_by(team) |>
+  summarise(count = n()) |>
+  arrange(count) -> question_4_b
+# saving resluts of part b to output file
+write_csv(x = question_4_a,
+          file = "../output/question_4_b.csv")
+```
+
+5.  What is the correlation between assists and turnovers?
+
+```{r}
+nba_all_stars |>
+  ggplot(mapping = aes(x = ast,
+                       y = turnover)) +
+  geom_point(color = "paleturquoise4") +
+  geom_smooth(method = "lm", color = "hotpink")
+#saving results to output file
+ggsave(filename = "../output/question_5.png")
+```
+
+6.  Which players have the most all star selections?
+
+```{r}
+nba_all_stars |>
+  group_by(first, last) |>
+  summarize(count = n()) |>
+  arrange(desc(count)) -> question_6
+#saving result to output file
+write_csv(x = question_6,
+          file = "../output/question_6.csv")
+  
 
 ```
