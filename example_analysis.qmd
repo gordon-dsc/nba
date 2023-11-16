@@ -3,6 +3,104 @@ title: "Example Analysis"
 format: html
 ---
 
-```{r packages}
+## Analysis Example 1
 
+How has the number of three pointers attempted changed over time? The vertical line represents the year Stephen Curry entered the NBA
+
+![](output/question_1.png){width="406"}
+
+Scatter plot showing the average number of 3 pointers attempted has increased over the years. Note: Vertical line shows when Stephen Curry entered the NBA
+
+```{r}
+nba_all_stars |>
+  group_by(year) |>
+  summarize(avg_fg3a = mean(fg3a, na.rm = TRUE)) -> avg_3_atempt
+
+avg_3_atempt |>
+  ggplot(mapping = aes(x = year,
+                       y = avg_fg3a)) +
+  geom_point(color = "blue") +
+  geom_smooth(color = "black", alpha = 0.25) +
+  geom_vline(xintercept = 2009, color = "gold")
+```
+
+## Analysis Example 2
+
+Top ten players who scored the highest average points in years they were an all star
+
+![](output/Screenshot%202023-11-16%20at%204.29.05%E2%80%AFPM.png){width="369"}
+
+```{r}
+nba_all_stars |>
+  group_by(first, last) |>
+  summarize(avg_pts = mean(pts, na.rm = TRUE)) |>
+  arrange(desc(avg_pts)) |>
+  head(n = 10) -> question_2
+```
+
+## Analysis Example 3
+
+How does average points per game correlate with the average free throws attempted?
+
+![](output/question_3.png){width="491"}
+
+```{r}
+nba_all_stars |>
+  ggplot(mapping = aes(x = pts,
+                       y = fta)) +
+  geom_point() + 
+  geom_smooth(method = "lm")
+```
+
+## Analysis Example 4
+
+Which team has contributed the most all stars and the least all stars?
+
+Part(a)
+
+![](output/Screenshot%202023-11-16%20at%204.36.19%E2%80%AFPM.png){width="273"}
+
+```{r}
+nba_all_stars |>
+  group_by(team) |>
+  summarise(count = n()) |>
+  arrange(desc(count)) -> question_4_a
+```
+
+Part(b)
+
+![](output/Screenshot%202023-11-16%20at%204.40.35%E2%80%AFPM.png){width="262"}
+
+```{r}
+nba_all_stars |>
+  group_by(team) |>
+  summarise(count = n()) |>
+  arrange(count) -> question_4_b
+```
+
+## Analysis Example 5
+
+What is the correlation between assists and turnovers?
+
+![](output/question_5.png){width="401"}
+
+```{r}
+nba_all_stars |>
+  ggplot(mapping = aes(x = ast,
+                       y = turnover)) +
+  geom_point(color = "paleturquoise4") +
+  geom_smooth(method = "lm", color = "hotpink")
+```
+
+## Analysis Example 6
+
+Which players have the most all star selections?
+
+![](output/Screenshot%202023-11-16%20at%204.43.49%E2%80%AFPM.png){width="394"}
+
+```{r}
+nba_all_stars |>
+  group_by(first, last) |>
+  summarize(count = n()) |>
+  arrange(desc(count)) -> question_6
 ```
