@@ -14,6 +14,12 @@ library(tidyverse)
 library(janitor)
 ```
 
+## Import Uncleaned Data Set
+
+```{r}
+read_csv(file = "../data/imported_data/nba_all_stars.csv") -> nba_all_stars
+```
+
 ## Data Cleaning
 
 The first step running this data cleaning script is to import the raw data set from import. The data from the import is relatively clean already. This simply cleans up the names and removes the unneeded player_id column (unique identifier within the API) and the season column as this is a repeat of the year column.
