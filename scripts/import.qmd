@@ -39,7 +39,8 @@ nba_all_star |>
   drop_na() |>
   mutate(new_column = rep(c("player", "team"), length.out = n())) |>
   pivot_wider(names_from = new_column,
-              values_from = nba_all_star) |>
+              values_from = nba_all_star,
+              values_fn = list) |>
   unnest_longer(col = 1:2) |>
   separate_wider_delim(cols = player,
                        delim = " ",
