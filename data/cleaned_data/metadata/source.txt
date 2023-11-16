@@ -1,0 +1,136 @@
+The data set in the import section was created by pulling nba all star names
+and years of selection from a webistes various pages through the use of web 
+scrapping. The website listed each game on a seperate page so every page in
+the given date range of 1980-2022. Once a list of names where achieved the 
+balldontlie api was used to generate the stats for every player in the year
+of their selection. 
+
+Bibliography:
+“Introduction.” Balldontlie API, www.balldontlie.io/home.html#introduction.
+Accessed 16 Nov. 2023. 
+
+“1981 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_1981.html. Accessed 16 Nov. 2023. 
+
+“1982 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_1982.html. Accessed 16 Nov. 2023. 
+
+“1983 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_1983.html. Accessed 16 Nov. 2023. 
+
+“1984 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_1984.html. Accessed 16 Nov. 2023. 
+
+“1985 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_1985.html. Accessed 16 Nov. 2023. 
+
+“1986 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_1986.html. Accessed 16 Nov. 2023. 
+
+“1987 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_1987.html. Accessed 16 Nov. 2023. 
+
+“1988 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_1988.html. Accessed 16 Nov. 2023. 
+
+“1989 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_1989.html. Accessed 16 Nov. 2023. 
+
+“1990 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_1990.html. Accessed 16 Nov. 2023. 
+
+“1991 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_1991.html. Accessed 16 Nov. 2023. 
+
+“1992 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_1992.html. Accessed 16 Nov. 2023. 
+
+“1993 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_1993.html. Accessed 16 Nov. 2023. 
+
+“1994 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_1994.html. Accessed 16 Nov. 2023. 
+
+“1995 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_1995.html. Accessed 16 Nov. 2023. 
+
+“1996 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_1996.html. Accessed 16 Nov. 2023. 
+
+“1997 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_1997.html. Accessed 16 Nov. 2023.
+
+“1998 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_1998.html. Accessed 16 Nov. 2023. 
+
+“2000 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_2000.html. Accessed 16 Nov. 2023. 
+
+“2001 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_2001.html. Accessed 16 Nov. 2023. 
+
+“2002 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_2002.html. Accessed 16 Nov. 2023. 
+
+“2003 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_2003.html. Accessed 16 Nov. 2023. 
+
+“2004 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_2004.html. Accessed 16 Nov. 2023. 
+
+“2005 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_2005.html. Accessed 16 Nov. 2023. 
+
+“2006 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_2006.html. Accessed 16 Nov. 2023. 
+
+“2007 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_2007.html. Accessed 16 Nov. 2023. 
+
+“2008 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_2008.html. Accessed 16 Nov. 2023. 
+
+“2009 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_2009.html. Accessed 16 Nov. 2023. 
+
+“2010 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_2010.html. Accessed 16 Nov. 2023. 
+
+“2011 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_2011.html. Accessed 16 Nov. 2023. 
+
+“2012 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_2012.html. Accessed 16 Nov. 2023. 
+
+“2013 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_2013.html. Accessed 16 Nov. 2023.
+
+“2014 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_2014.html. Accessed 16 Nov. 2023. 
+
+“2015 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_2015.html. Accessed 16 Nov. 2023. 
+
+“2016 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_2016.html. Accessed 16 Nov. 2023. 
+
+“2017 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_2017.html. Accessed 16 Nov. 2023. 
+
+“2018 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_2018.html. Accessed 16 Nov. 2023. 
+
+“2019 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_2019.html. Accessed 16 Nov. 2023. 
+
+“2020 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_2020.html. Accessed 16 Nov. 2023. 
+
+“2021 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_2021.html. Accessed 16 Nov. 2023. 
+
+“2022 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_2022.html. Accessed 16 Nov. 2023. 
+
+“2023 NBA All-Star Game Box Score.” Basketball Reference,
+www.basketball-reference.com/allstar/NBA_2023.html. Accessed 16 Nov. 2023. 
