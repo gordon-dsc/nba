@@ -78,7 +78,7 @@ nba_all_stars |>
   summarise(count = n()) |>
   arrange(count) -> question_4_b
 # saving resluts of part b to output file
-write_csv(x = question_4_a,
+write_csv(x = question_4_b,
           file = "../output/question_4_b.csv")
 ```
 
@@ -106,4 +106,12 @@ write_csv(x = question_6,
           file = "../output/question_6.csv")
   
 
+```
+
+### Final data frame
+
+```{r}
+# creates the final data frame to be posted 
+write_csv(x = nba_all_stars,
+          file = "../output/final_data.csv")
 ```
