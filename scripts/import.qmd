@@ -155,28 +155,6 @@ get_season_avg <- function(first, last, season){
 }
 ```
 
-## Examples of API use on test data frame
-
-Created a simple Data Frame object with player names to test functionality
-
-```{r}
-#create a data frame for testing
-names <- list(lebron = c("LeBron","James"),
-              davis = c("Anthony", "Davis"))
-names <- tibble(names)
-names|>
-  unnest_wider(names, names_sep = "")->
-  names
-
-#test function within a mutate call
-names|>
-  mutate(stats = map2(.x = names1,
-                      .y = names2,
-                      .f = \(x,y) {get_season_avg(x,y,2020)})) |>
-  unnest_wider(stats) ->
-  names_stats
-```
-
 ## Data import using scrape and API
 
 Data import by using scrape function by year to get names and year into frame before using api function to get stats data. Some names are scrapped in a way that is difficult for API to find so they are changed with case_when clauses.
