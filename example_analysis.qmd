@@ -29,12 +29,12 @@ The scatter plot generated from the code above gives many interesting insights i
 How has the three point shooting percentages changed over time as the number of three point attempts has gone up?
 
 ```{r}
-#group the all starts by year and find average number of 3 pointers attempted by all stars
+#group the all starts by year and find average number of 3 pointers made by all stars
 nba_all_stars |>
   group_by(year) |>
   summarize(avg_fg3_pct = mean(fg3_pct, na.rm = TRUE)) -> avg_3_pct
 
-#plot the average number of three pointers attempted by all stars over the years of the data
+#plot the average number of three pointers made by all stars over the years of the data
 avg_3_pct |>
   ggplot(mapping = aes(x = year,
                        y = avg_fg3_pct)) +
@@ -57,7 +57,7 @@ nba_all_stars |>
   head(n = 10) -> question_3
 ```
 
-The ability to score the basketball is an essential aspect of any NBA all star. The table produced from the code above displays top 10 players average points per game a player scored across all years of selection to the All Star game. Amoung the list are some all time great players as well as some young stars to look out for in the coming years. The ability of top players to score seems to have a correlations with the ability draw fouls and has been met with a love - hate relationship by the NBA fan base but what is that correlation?
+The ability to score the basketball is an essential aspect of any NBA all star. The table produced from the code above displays top 10 players average points per game a player scored across all years of selection to the All Star game. Among the list are some all time great players as well as some young stars to look out for in the coming years. The ability of top players to score seems to have a correlations with the ability draw fouls and has been met with a love - hate relationship by the NBA fan base but what is that correlation?
 
 ## Analysis Example 4
 
@@ -113,8 +113,6 @@ from the results we can see that BOS or the Boston Celtics have had the most num
 ## Analysis Example 7
 
 What is the correlation between assists and turnovers?
-
-![](output/question_5.png){width="401"}
 
 ```{r}
 nba_all_stars |>
