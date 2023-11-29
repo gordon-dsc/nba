@@ -7,42 +7,61 @@ format: html
 
 How has the number of three pointers attempted changed over time? The vertical line represents the year Stephen Curry entered the NBA
 
-![](output/question_1.png){width="406"}
-
-Scatter plot showing the average number of 3 pointers attempted has increased over the years. Note: Vertical line shows when Stephen Curry entered the NBA
-
 ```{r}
+#group the all starts by year and find average number of 3 pointers attempted by all stars
 nba_all_stars |>
   group_by(year) |>
   summarize(avg_fg3a = mean(fg3a, na.rm = TRUE)) -> avg_3_atempt
 
+#plot the average number of three pointers attempted by all stars over the years of the data
 avg_3_atempt |>
   ggplot(mapping = aes(x = year,
                        y = avg_fg3a)) +
   geom_point(color = "blue") +
   geom_smooth(color = "black", alpha = 0.25) +
-  geom_vline(xintercept = 2009, color = "gold")
+  geom_vline(xintercept = 2009, color = "gold") #add the vertical line at 2009 for Curry
 ```
+
+The scatter plot generated from the code above gives many interesting insights into the question above. The general trend of the number of 3's attempted by all stars clearly has gone up over the course of time. From 1980 to 1995 a constant upward slope is seen followed by a flat section from 1995 to 2009. After 2009, the year Curry was drafted, the number of 3 pointers attempted per game exploded and continues to rise every year. This uptrend since 2009 supports the claim that Curry changed the game. Interesting the plot does not show if the increased in 3's attempted is accompanied by a change in the amount made or the total amounts of points scored.
 
 ## Analysis Example 2
 
-Top ten players who scored the highest average points in years they were an all star
+How has the three point shooting percentages changed over time as the number of three point attempts has gone up?
 
-![](output/Screenshot%202023-11-16%20at%204.29.05%E2%80%AFPM.png){width="369"}
+```{r}
+#group the all starts by year and find average number of 3 pointers attempted by all stars
+nba_all_stars |>
+  group_by(year) |>
+  summarize(avg_fg3_pct = mean(fg3_pct, na.rm = TRUE)) -> avg_3_pct
+
+#plot the average number of three pointers attempted by all stars over the years of the data
+avg_3_pct |>
+  ggplot(mapping = aes(x = year,
+                       y = avg_fg3_pct)) +
+  geom_point(color = "blue") +
+  geom_smooth(color = "black", alpha = 0.25) +
+  geom_vline(xintercept = 2009, color = "gold") #add the vertical line at 2009 for Curry
+```
+
+The result of this plot is rather interesting. Almost identical to the 3 pointers attempted the 3 point shooting percentage steadily increased from 1980 to 1995 and was followed by a flat period until 2009. After Curry entered the league the 3 point percentage began increasing again but at a much slower rate than in the 1980s and much slower than the increase in 3 pointers attempted. It is important to note that these are the shooting percentages from all stars who are some of the best in the league. The slow growth after 2009 may indicate that players are nearing the edge of possible ability but seems like a continued slow growth is still achievable.
+
+## Analysis Example 3
+
+Top ten players who scored the highest average points in years they were an all star?
 
 ```{r}
 nba_all_stars |>
   group_by(first, last) |>
   summarize(avg_pts = mean(pts, na.rm = TRUE)) |>
   arrange(desc(avg_pts)) |>
-  head(n = 10) -> question_2
+  head(n = 10) -> question_3
 ```
 
-## Analysis Example 3
+The ability to score the basketball is an essential aspect of any NBA all star. The table produced from the code above displays top 10 players average points per game a player scored across all years of selection to the All Star game. Amoung the list are some all time great players as well as some young stars to look out for in the coming years. The ability of top players to score seems to have a correlations with the ability draw fouls and has been met with a love - hate relationship by the NBA fan base but what is that correlation?
+
+## Analysis Example 4
 
 How does average points per game correlate with the average free throws attempted?
-
-![](output/question_3.png){width="491"}
 
 ```{r}
 nba_all_stars |>
@@ -52,13 +71,26 @@ nba_all_stars |>
   geom_smooth(method = "lm")
 ```
 
-## Analysis Example 4
+As seen by the above graph there is a very strong positive association between number of points score per game and free throws attempted by all stars. Any of the top scoring all stars from example 3 were attempting at least 5 free throws a game at a minimum. From this it can be concluded that if fans would like to continue to see players score high number of points per game they will have to find a way to deal with annoying foul calls. While these analysis have looked at average of players over careers of all star games we can also see what players have the most overall selections.
+
+## Analysis Example 5
+
+Which players have the most all star selections?
+
+```{r}
+nba_all_stars |>
+  group_by(first, last) |>
+  summarize(count = n()) |>
+  arrange(desc(count)) -> question_5
+```
+
+Unsurprisingly LeBron James has had the most selections followed by many of the all time great players such as Kobe Bryant, Tim Duncan, Michael Jordan. Moving along after highest selection by player we can also see what teams have contributed the most all stars.
+
+## Analysis Example 6
 
 Which team has contributed the most all stars and the least all stars?
 
 Part(a)
-
-![](output/Screenshot%202023-11-16%20at%204.36.19%E2%80%AFPM.png){width="273"}
 
 ```{r}
 nba_all_stars |>
@@ -69,8 +101,6 @@ nba_all_stars |>
 
 Part(b)
 
-![](output/Screenshot%202023-11-16%20at%204.40.35%E2%80%AFPM.png){width="262"}
-
 ```{r}
 nba_all_stars |>
   group_by(team) |>
@@ -78,7 +108,9 @@ nba_all_stars |>
   arrange(count) -> question_4_b
 ```
 
-## Analysis Example 5
+from the results we can see that BOS or the Boston Celtics have had the most number of players selected to the all star game with 65 followed by the Lakers at 63. These are also the two teams with the most championship titles. Example 7 is another bonus
+
+## Analysis Example 7
 
 What is the correlation between assists and turnovers?
 
@@ -92,15 +124,4 @@ nba_all_stars |>
   geom_smooth(method = "lm", color = "hotpink")
 ```
 
-## Analysis Example 6
-
-Which players have the most all star selections?
-
-![](output/Screenshot%202023-11-16%20at%204.43.49%E2%80%AFPM.png){width="394"}
-
-```{r}
-nba_all_stars |>
-  group_by(first, last) |>
-  summarize(count = n()) |>
-  arrange(desc(count)) -> question_6
-```
+It is seen that there is a positive correlation between assist and turnovers.

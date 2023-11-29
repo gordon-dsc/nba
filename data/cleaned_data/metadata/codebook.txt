@@ -5,6 +5,10 @@ The following is a description of variables in uncleaned data set
 first = first name of player
 last = last name of player
 team = Three letter abbreviation of team they played for in that year
+     possible teams: "PHI" "ATL" "CHI" "BOS" "NYK" "MIL" "CLE" "SEA" "SAS" "LAL"
+    "PHO" "UTA" "HOU" "KCK" "DET" "NJN" "GSW" "DEN" "POR" "WSB" "DAL" "LAC" 
+    "IND" "ORL" "CHH" "SAC" "MIA" "MIN" "TOR" "WAS" "NOH" "MEM" "CHA" "OKC" 
+    "BRK" "NOP" "CHO"
 year = listed start of the season (1980 indicated the 1980-1981 season)
 games_played = number of games played in the season
 min = average minutes played per game in the season
