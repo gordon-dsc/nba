@@ -54,7 +54,7 @@ nba_all_stars |>
   group_by(first, last) |>
   summarize(avg_pts = mean(pts, na.rm = TRUE)) |>
   arrange(desc(avg_pts)) |>
-  head(n = 10) -> question_3
+  head(n = 10)
 ```
 
 The ability to score the basketball is an essential aspect of any NBA all star. The table produced from the code above displays top 10 players average points per game a player scored across all years of selection to the All Star game. Amoung the list are some all time great players as well as some young stars to look out for in the coming years. The ability of top players to score seems to have a correlations with the ability draw fouls and has been met with a love - hate relationship by the NBA fan base but what is that correlation?
@@ -80,8 +80,9 @@ Which players have the most all star selections?
 ```{r}
 nba_all_stars |>
   group_by(first, last) |>
-  summarize(count = n()) |>
-  arrange(desc(count)) -> question_5
+  summarize(count = n(),
+            .groups = "drop_last") |>
+  arrange(desc(count)) 
 ```
 
 Unsurprisingly LeBron James has had the most selections followed by many of the all time great players such as Kobe Bryant, Tim Duncan, Michael Jordan. Moving along after highest selection by player we can also see what teams have contributed the most all stars.
@@ -96,7 +97,7 @@ Part(a)
 nba_all_stars |>
   group_by(team) |>
   summarise(count = n()) |>
-  arrange(desc(count)) -> question_4_a
+  arrange(desc(count)) 
 ```
 
 Part(b)
@@ -105,7 +106,7 @@ Part(b)
 nba_all_stars |>
   group_by(team) |>
   summarise(count = n()) |>
-  arrange(count) -> question_4_b
+  arrange(count) 
 ```
 
 from the results we can see that BOS or the Boston Celtics have had the most number of players selected to the all star game with 65 followed by the Lakers at 63. These are also the two teams with the most championship titles. Example 7 is another bonus
@@ -113,8 +114,6 @@ from the results we can see that BOS or the Boston Celtics have had the most num
 ## Analysis Example 7
 
 What is the correlation between assists and turnovers?
-
-![](output/question_5.png){width="401"}
 
 ```{r}
 nba_all_stars |>
